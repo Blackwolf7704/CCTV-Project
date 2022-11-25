@@ -13,7 +13,7 @@ LogDir = Init.MainLoc + LogDirLoc
 LogLocation = LogDir + LogName
 
 #포맷 형식을 딕셔너리로 해서 변경 불가하게 한다.
-Format_Type = { 0:"ERROR", 1:"WARNING", 2:"ALERT", 3:"INFO" }
+Format_Type = { 0:"ERROR", 1:"WARNING", 2:"ALERT", 3:"INFO" , 4:"DEBUG"}
 
 #발생하는 이벤트에 대한 로그 기록
 #파일을 함수에서 열고 닫는 이유는 프로그램의 안정성 때문에 사용한다.
@@ -30,6 +30,7 @@ def EventLog(message, Type=None):
     elif(Format_Type[1] == Type): Format = "[" + NowTime + "] [WARNING] : " + message + "\n"
     elif(Format_Type[2] == Type): Format = "[" + NowTime + "] [ALERT] : " + message + "\n"
     elif(Format_Type[3] == Type): Format = "[" + NowTime + "] [INFO] : " + message + "\n"
+    elif(Format_Type[4] == Type): Format = "[" + NowTime + "] [DEBUG] : " + message + "\n"
     else:
         Format = "[" + NowTime + "] : " + message + "\n"
     

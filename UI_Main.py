@@ -1,8 +1,6 @@
 '''
 추가해야 할 목록
-1. 로그 출력, read
 2. 카메라 번호 설정
-5. onMenualAlert 이벤트 수정 => 서버 처리
 https://catloaf.tistory.com/66?category=950060
 '''
 
@@ -40,6 +38,9 @@ class Main():
     
     Screenshoot_Delay = config['SC_Delay']
     Accuracy = config['Accuracy']
+    
+    width = 0
+    height = 0
 
 #UI 연결 (Exe Build)
 #import Initialization as Init
@@ -63,7 +64,7 @@ class PrintCamera(QThread):
         self.CamID = cid
         self.showRes = 0
         
-        PL.EventLog("PrintCamera Thread init success!", "INFO")
+        PL.EventLog("Detect Enabled [Cam ID : " + str(self.CamID) + "]", "INFO")
     
     #스레드의 실제 작동 부위
     def run(self):        
@@ -87,7 +88,7 @@ class PrintCamera(QThread):
                 #전처리된 이미지를 RGB로 변환 후 qt 이미지에 출력한다.
                 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
                 img = QtGui.QImage(img.data, w, h, ch * w, QImage.Format.Format_RGB888)
-                res = QPixmap.fromImage(img.scaled(w, h, Qt.AspectRatioMode.KeepAspectRatio))
+                res = QPixmap.fromImage(img.scaled(Main.width, Main.height, Qt.AspectRatioMode.KeepAspectRatio))
                 
                 #정확도를 불러와서, 사람이 감지가 되면 스크린샷을 찍는다.
                 if(len(Acc) != 0 and checktime):
@@ -109,7 +110,7 @@ class PrintCamera(QThread):
 
     #스레드를 오류 없이 종료하기 위함
     def stop(self):
-        PL.EventLog("PrintCamera Thread Ended", "INFO")
+        PL.EventLog("Detect Disabled [Cam ID : " + str(self.CamID) + "]", "INFO")
         self.work = False
         self.quit()
         self.wait(1000)
@@ -121,7 +122,6 @@ class GetLog(QThread):
     def __init__(self):
         super().__init__()
         self.work = True 
-        PL.EventLog("Logging Thread Started", "INFO")
     
     def run(self):
         while self.work:
@@ -132,7 +132,7 @@ class GetLog(QThread):
                 time.sleep(1)
 
     def stop(self):
-        PL.EventLog("Logging Thread Ended", "INFO")
+        PL.EventLog("Logging Start!", "INFO")
         self.work = False
         self.quit()
         self.wait(1000)
@@ -163,7 +163,11 @@ class MainGUI(QMainWindow, UI_Main):
         
         self.setupUi(self)
         self.onLoad()
-        #self.debug()
+        
+        #위젯의 크기
+        x = QWidget.rect(self.LB_CamRes)
+        Main.width = x.width()
+        Main.height = x.height()
         
         #특정 객체 클릭 시 함수 작동
         self.Btn_Conf.clicked.connect(self.onConfiguration)
@@ -213,18 +217,6 @@ class MainGUI(QMainWindow, UI_Main):
         elif self.AddCamThreadRunning == 1:
             QMessageBox.critical(self, 'ERROR', "이미 카메라 연결 창이 활성화되어있습니다!!")
             
-        '''
-        self.s = AC.AddCamUI()
-        self.s.exec()
-        
-        #캠 ID 값을 일시로 저장한 QLabel의 값이 공백 (취소 또는 비정상 값)이 아니라면 실행
-        if(self.s.QL_Value.text() != ""):
-            self.CMB_Camera.addItem(" " + self.s.QL_Value.text())
-            
-            PL.EventLog("CAMERA ADDED", "INFO")
-
-        #http://www.gisdeveloper.co.kr/?p=8328
-        '''
     def onScreenShoot(self):
         ScreenShoot(self.LB_CamRes.pixmap(), "user")
     
@@ -272,13 +264,18 @@ class MainGUI(QMainWindow, UI_Main):
         if (len(dvc) == 0):
             return
         
-        for i in range(len(dvc)):
-            self.CMB_Camera.addItem(dvc[i])
+        for i in dvc:
+            if(self.ConnectingCamera(dvc[i]) == True):
+                self.CMB_Camera.addItem(dvc[i])
             
-            #기본 카메라에 연결
-            if i == 0 and dvc[i] != None:
-                self.ConnectingCamera(dvc[i])
-                
+            
+        #1번째 카메라에 연결
+        cid = dvc[next(iter(dvc))]
+        try:
+            cid = int(i)
+        except:
+            cid = str(i)
+            
     #카메라 무한루프 해결
     @pyqtSlot(QPixmap)
     def update_image(self, img):
@@ -293,74 +290,32 @@ class MainGUI(QMainWindow, UI_Main):
         except:
             cid = str(dvcid)
         
-        c = cv2.VideoCapture(cid, cv2.CAP_DSHOW)
-        
+        try:
+            c = cv2.VideoCapture(cid, cv2.CAP_DSHOW)
+        except:
+            return False
+
         if c.isOpened() == True:
             self.CamThread[cid] = PrintCamera(cid)
+            self.CamThread[cid].start()
             
             if self.ResShow == 0:
                 self.ResShow = 1
                 
                 self.cap = self.CamThread[cid]
                 self.cap.changePixmap.connect(self.update_image)
-                self.cap.start()
                 self.cap.SetShow(True)
                 
             elif self.ResShow == 1:
-                self.cap.stop()
-                #self.cap.SetShow(False)
-                #self.cap.changePixmap.disconnect(self.update_image)
+                self.cap.SetShow(False)
+                self.cap.changePixmap.disconnect(self.update_image)
                 
                 self.cap = self.CamThread[cid]
                 self.cap.changePixmap.connect(self.update_image)
-                self.cap.start()
                 self.cap.SetShow(True)
                 
-    def debug(self):
-        self.CamThread['0'] = PrintCamera(0)
-        self.CamThread['1'] = PrintCamera(1)
-        
-        self.CamThread['0'].start()
-        self.CamThread['1'].start()
-
-        
-        '''
-        if c.isOpened() == True and self.CamearaThreadRunning == 0:
-            self.CamearaThreadRunning = 1
-            self.CamThread.append(PrintCamera(cid))
-            
-            self.cap = self.CamThread[len(self.CamThread) - 1]
-            self.cap.changePixmap.connect(self.update_image)
-            self.cap.start()
-            
-            #self.CamThread[len(self.CamThread)-1].changePixmap.connect(self.update_image)
-        
-        elif c.isOpened() == True and self.CamearaThreadRunning == 1:
-            self.cap.ShowResSet()
-            
-            self.CamThread.append(Printcamera(cid))
-            self.cap = self.CamThread[len(self.CamThread - 1)]
-            self.cap.changePixmap.connect(self.update_image)
-            self.cap.start()
-            
-        if c.isOpened() == True and self.CamearaThreadRunning == 0:
-            self.CamearaThreadRunning = 1
-            
-            self.capture = PrintCamera(cid)
-            self.capture.changePixmap.connect(self.update_image)
-            self.capture.start()
-            
-        #기존 스레드가 작동중일 경우, 스레드를 종료후, 다른 스레드로 재시작
-        #오버로딩 현상 해결
-        elif c.isOpened() == True and self.CamearaThreadRunning == 1:
-            self.capture.stop()
-            self.capture = PrintCamera(cid)
-            self.capture.changePixmap.connect(self.update_image)
-            self.capture.start()
-            
-        else:
-            QMessageBox.critical(self, 'ERROR', "카메라에 연결할 수 없습니다!!")
-        '''
+            return True
+                
             
 def ScreenShoot(image, Type="system"):
     img = ImageQt.fromqpixmap(image)

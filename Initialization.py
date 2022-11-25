@@ -15,7 +15,7 @@ import os, sys, time
 import json
 
 #기초 설정 변수
-DvcList = "DeviceList.conf"
+DvcList = "DeviceList.json"
 ProgramConf = "main.json"
 MainLoc = os.getcwd().replace("\\","/") + "/"
 
@@ -69,13 +69,15 @@ def MakeConfFile():
         F1 = open(SubLoc + DvcList, "w")
         F2 = open(SubLoc + ProgramConf, "w")
         
-        #기본 카메라 번호 지정
-        F1.write("0\n")
+        #기본 카메라 장치 지정        
+        default_device = { "0" : "0" }
+        json.dump(default_device, F1, indent=2)
         
         #기본 설정 지정
         conf = {
             "SC_Delay" : 5,
-            "Accuracy" : 0.55
+            "Accuracy" : 0.55,
+            "Default_Device" : 0
         }
         
         json.dump(conf, F2, indent=2)
@@ -99,23 +101,8 @@ def Integrity_check():
                 os.mkdir(MainLoc + i)
                 print("Main Directory", i, "was recreated.")
                 print("But previous data was removed.")
-        
-            elif (DvcList in i) == True:
-                f = open(MainLoc + i, 'a')
-                f.write("0\n")
-                f.close()
                 
-                print("Main File", i, "was recreated.")
-                print("But previous data was removed.")
-                    
-            else:
-                f = open(MainLoc + i, 'a')
-                f.close()
-                    
-                print("Main File", i, "was recreated.")
-                print("But previous data was removed.")
-                
-# .exe파일로 만들시 필요
+# .exe파일로 만들시 필요 (Appdata 의 경로)
 def resource_path(*relative_Path_AND_File):
     """ Get absolute path to resource, works for dev and for PyInstaller """
     try:

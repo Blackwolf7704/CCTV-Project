@@ -24,4 +24,4 @@ if __name__ == "__main__":
         app.exec()
     
     else:
-        print("프로그램을 실행할 수 없습니다.")
+        print("Program can't Initialization")

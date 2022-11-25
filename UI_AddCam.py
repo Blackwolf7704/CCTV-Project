@@ -89,10 +89,7 @@ def AddDevice(CamID):
         return False
         
     else:
-        File_conf = open("./data/DeviceList.conf", "a")
-        File_conf.write(CamID)
-        File_conf.write("\n")
-        File_conf.close()
+        cf.AddDeviceConf(CamID)
         
         PL.EventLog("Camera Added [ID : " + CamID + "]", Type="INFO")
         
