@@ -1,2 +1,4 @@
 # CCTV
-Object Detection with PyQt6
+
+Yolov5 에서 커스텀 데이터셋을 이용해 사람만 감지하는 모델을 학습시켰다.
+PyQt6을 통해 GUI 제작을 했다.
