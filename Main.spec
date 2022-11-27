@@ -1,4 +1,5 @@
 # -*- mode: python ; coding: utf-8 -*-
+from PyInstaller.building.datastruct import TOC
 
 block_cipher = None
 
@@ -8,11 +9,11 @@ data = [
 ]
 
 a = Analysis(
-    ['main.py'],
+    ['Main.py'],
     pathex=[],
     binaries=[],
     datas=data,
-    hiddenimports=['PIL', 'cv2', 'PyQt6'],
+    hiddenimports=['PIL', 'cv2', 'PyQt6', 'onnxruntime', 'time', 'sys', 'os', 'json', 'datetime'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -22,6 +23,16 @@ a = Analysis(
     cipher=block_cipher,
     noarchive=False,
 )
+
+x = 'cp39-win_amd64'
+datas_upd = TOC()
+
+for d in a.datas:
+    if x not in d[0] and x not in d[1]:
+        datas_upd.append(d)
+
+a.datas = datas_upd
+
 pyz = PYZ(a.pure, a.zipped_data, cipher=block_cipher)
 
 exe = EXE(
@@ -31,7 +42,7 @@ exe = EXE(
     a.zipfiles,
     a.datas,
     [],
-    name='main',
+    name='Main',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
