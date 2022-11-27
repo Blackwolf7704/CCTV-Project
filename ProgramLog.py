@@ -53,7 +53,7 @@ def onEnded():
     try: os.rename(LogLocation, LogDir + Init.StartTime + ".log")
     except Exception as EMessage: print(EMessage)
     
-#로그 전체를 불러오는 함수 / 디버깅용이다.
+#로그 전체를 불러오는 함수
 def GetNowLog():
     Temp = open(LogLocation, "r")
     res = Temp.readlines()

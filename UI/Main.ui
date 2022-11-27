@@ -6,97 +6,25 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>886</width>
-    <height>486</height>
+    <width>883</width>
+    <height>474</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>883</width>
+    <height>474</height>
+   </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>1920</width>
-    <height>1080</height>
+    <width>883</width>
+    <height>474</height>
    </size>
   </property>
   <property name="windowTitle">
    <string/>
   </property>
-  <widget class="QPushButton" name="Btn_Screenshot">
-   <property name="geometry">
-    <rect>
-     <x>10</x>
-     <y>10</y>
-     <width>91</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>1920</width>
-     <height>1080</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>스크린샷</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="Btn_Conf">
-   <property name="geometry">
-    <rect>
-     <x>120</x>
-     <y>10</y>
-     <width>91</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>1920</width>
-     <height>1080</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>설정</string>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="CMB_Camera">
-   <property name="geometry">
-    <rect>
-     <x>340</x>
-     <y>10</y>
-     <width>131</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>1920</width>
-     <height>1080</height>
-    </size>
-   </property>
-   <property name="editable">
-    <bool>false</bool>
-   </property>
-   <property name="currentText">
-    <string/>
-   </property>
-  </widget>
   <widget class="QLabel" name="LB_CamNum">
    <property name="geometry">
     <rect>
@@ -129,31 +57,6 @@
    </property>
    <property name="text">
     <string>Camera</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="Btn_AddCamera">
-   <property name="geometry">
-    <rect>
-     <x>230</x>
-     <y>10</y>
-     <width>91</width>
-     <height>41</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>1920</width>
-     <height>1080</height>
-    </size>
-   </property>
-   <property name="text">
-    <string>카메라 추가</string>
    </property>
   </widget>
   <widget class="QTextBrowser" name="TB_LogBrowser">
@@ -208,6 +111,97 @@
    <property name="text">
     <string/>
    </property>
+  </widget>
+  <widget class="QWidget" name="">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>10</y>
+     <width>511</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="Btn_Screenshot">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1920</width>
+        <height>1080</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>스크린샷</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="Btn_Conf">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1920</width>
+        <height>1080</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>설정</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="Btn_AddCamera">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1920</width>
+        <height>1080</height>
+       </size>
+      </property>
+      <property name="text">
+       <string>카메라 추가</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QComboBox" name="CMB_Camera">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>1920</width>
+        <height>1080</height>
+       </size>
+      </property>
+      <property name="editable">
+       <bool>false</bool>
+      </property>
+      <property name="currentText">
+       <string/>
+      </property>
+     </widget>
+    </item>
+   </layout>
   </widget>
  </widget>
  <resources/>

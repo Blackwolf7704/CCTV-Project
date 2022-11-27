@@ -3,7 +3,6 @@ from PyQt6.QtWidgets import *
 from PyQt6 import uic
 
 #내부 기능 모듈
-import ProgramLog as PL
 import Configuration as cf
 
 #변수 목록

@@ -34,8 +34,9 @@ def Detect(frame, MIN_Accuracy):
     #https://towardsdatascience.com/tensors-and-arrays-2611d48676d5
     #텐서 형식이 ndarray보다 성능 개선이 있다.
     
-    #전처리 (Yolov5 에서 추출)
-    #LETTERBOX augmentations.py
+    #전처리 과정 (Yolov5 에서 추출) 각 함수의 추출한 부분 나열
+    ################################
+    #augmentations.py (LETTERBOX)
     input_shape = frame.shape[:2]
     set_shape = (640, 640)
     
@@ -49,6 +50,7 @@ def Detect(frame, MIN_Accuracy):
 
     im = [cv2.copyMakeBorder(frame, top, bottom, left, right, cv2.BORDER_CONSTANT, value=(114,114,114))]
     
+    ################################
     #detect im data
     im = np.stack(im, 0)
 
@@ -59,12 +61,14 @@ def Detect(frame, MIN_Accuracy):
     im = im.float()
     im /= 255
     
-    ###FORWARD common.py
+    ################################
+    #common.py (FORWARD)
     im = im.cpu().numpy()
     pred = session.run([session.get_outputs()[0].name], {session.get_inputs()[0].name:im})[0]
     pred = torch.tensor(pred)
 
-    ####### non_max_suppression.py
+    ################################
+    #non_max_suppression.py
     #정확도가 기준을 넘는지 검사한다 (반환형은 True / False)
     bs = pred.shape[0]
     xc = pred[..., 4] > MIN_Accuracy
@@ -90,8 +94,10 @@ def Detect(frame, MIN_Accuracy):
         
         res[xi] = x[i]
 
-    Accuracy = []
+    ################################
     #process predictions
+    Accuracy = []
+    
     for i, det in enumerate(res):
         if len(det):
             pad = (set_shape[1] - input_shape[1]) / 2, (set_shape[0] - input_shape[0]) / 2

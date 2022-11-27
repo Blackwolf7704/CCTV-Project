@@ -85,7 +85,7 @@ def MakeConfFile():
         F1.close()
         F2.close()
         
-#메인 파일의 무결성 검사 (폴더가 없는 경우에만 복구한다.)
+#메인 폴더의 무결성 검사 (폴더가 없는 경우에만 복구한다.)
 def Integrity_check():
     mainFiles = [
             "data",

@@ -10,6 +10,12 @@
     <height>107</height>
    </rect>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>280</width>
+    <height>107</height>
+   </size>
+  </property>
   <property name="maximumSize">
    <size>
     <width>280</width>

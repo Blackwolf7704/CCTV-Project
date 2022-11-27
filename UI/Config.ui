@@ -16,6 +16,12 @@
     <verstretch>1</verstretch>
    </sizepolicy>
   </property>
+  <property name="minimumSize">
+   <size>
+    <width>248</width>
+    <height>143</height>
+   </size>
+  </property>
   <property name="maximumSize">
    <size>
     <width>248</width>

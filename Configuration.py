@@ -17,6 +17,14 @@ def GetDeviceConf():
     
     return dvcList
 
+def GetProgramConf():
+    F = open(MainLoc + "data/" + ProgramConf, "r")
+    data = json.load(F)
+    F.close()
+    
+    return data
+
+#장치 추가
 def AddDeviceConf(DeviceID):
     Data = GetDeviceConf()
     Data[len(Data)] = DeviceID
@@ -25,13 +33,7 @@ def AddDeviceConf(DeviceID):
     json.dump(Data, F, indent=2)
     F.close()
 
-def GetProgramConf():
-    F = open(MainLoc + "data/" + ProgramConf, "r")
-    data = json.load(F)
-    F.close()
-    
-    return data
-
+#프로그램 설정 변경
 def SetProgramConf(Data):
     F = open(MainLoc + "data/" + ProgramConf, "w")
     json.dump(Data, F, indent=2)
