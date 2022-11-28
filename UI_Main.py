@@ -1,9 +1,3 @@
-'''
-추가해야 할 목록
-2. 카메라 번호 설정
-https://catloaf.tistory.com/66?category=950060
-'''
-
 #기본 모듈
 import cv2, sys
 import time
@@ -54,10 +48,10 @@ UI_Main = uic.loadUiType("./UI/Main.ui")[0]
 
 #메인 UI
 class MainGUI(QMainWindow, UI_Main):
-    ResShow = 0
     AddCamThreadRunning = 0
     ConfigurationRunning = 0
     CamThread = {}
+    Show_Cam_Device = None
     
     def __init__(self):        
         super().__init__()
@@ -75,6 +69,7 @@ class MainGUI(QMainWindow, UI_Main):
         self.Btn_Screenshot.clicked.connect(self.onScreenShoot)
         self.Btn_AddCamera.clicked.connect(self.AddCamera)
         self.CMB_Camera.activated.connect(self.onCameraChange)
+        #self.BTN_DEBUG.clicked.connect(self.debug)
         
         #로그 업데이트 스레드 생성 및 시작
         try:
@@ -89,7 +84,6 @@ class MainGUI(QMainWindow, UI_Main):
             #오류 발생시 프로그램 종료
             sys.exit()
             
-    #참고 코드 : https://helloezzi.tistory.com/155
     #QTextBrowser이 아닌 str로 변경했어야 한다.
     @pyqtSlot(str)
     def update_log(self, text):
@@ -102,7 +96,6 @@ class MainGUI(QMainWindow, UI_Main):
     def AddCamera(self):
         if self.AddCamThreadRunning == 0:
             self.AddCamThreadRunning = 1
-            
             self.s = AddCam()
             
             try:
@@ -112,16 +105,20 @@ class MainGUI(QMainWindow, UI_Main):
             
             if(text != None):
                 self.CMB_Camera.addItem(" " + text)
+                self.ConnectingCamera(text)
                 
             self.AddCamThreadRunning = 0
                 
         elif self.AddCamThreadRunning == 1:
             QMessageBox.critical(self, 'ERROR', "이미 카메라 연결 창이 활성화되어있습니다!!")
             
+    #스크린샷을 찍었을 때, 사용자 스크린샷을 찍게 한다.
     def onScreenShoot(self):
         ScreenShoot(self.LB_CamRes.pixmap(), "user")
     
+    #설정 변경 함수이다.
     def onConfiguration(self):
+        #설정 변경 창이 띄워져 있지 않을 경우에 실행
         if self.ConfigurationRunning == 0:
             self.ConfigurationRunning = 1
             self.s = UICF.ConfigUI()
@@ -135,10 +132,10 @@ class MainGUI(QMainWindow, UI_Main):
         
         elif self.ConfigurationRunning == 1:
             QMessageBox.critical(self, 'ERROR', "이미 설정 창이 활성화되어있습니다!!")
-        
     
+    #카메라를 변경할 때 작동되는 함수
     def onCameraChange(self):
-        self.ConnectingCamera(self.CMB_Camera.currentText())
+        self.ShowCamera(self.CMB_Camera.currentText())
     
     #창 종료할 때 이벤트 오버라이딩
     def closeEvent(self, event):
@@ -168,15 +165,16 @@ class MainGUI(QMainWindow, UI_Main):
         for i in dvc:
             if(self.ConnectingCamera(dvc[i]) == True):
                 self.CMB_Camera.addItem(dvc[i])
+
+        #기본 카메라 장치 연결
+        self.ShowCamera(dvc["0"])
             
-        self.ConnectingCamera(dvc['0'])
-            
-    #카메라 무한루프 해결
+    #QT 시그널 정의 (카메라의 결과를 보여주는데 사용한다.)
     @pyqtSlot(QPixmap)
     def update_image(self, img):
         self.LB_CamRes.setPixmap(img)
         
-    #카메라 연결
+    #카메라 연결 및 스레드 시작
     def ConnectingCamera(self, dvcid):
         cid = dvcid
 
@@ -185,36 +183,46 @@ class MainGUI(QMainWindow, UI_Main):
         except:
             cid = str(dvcid)
         
+        #카메라가 열려 있는지 확인
         try:
-            #c = cv2.VideoCapture(cid, cv2.CAP_DSHOW)
-            c = cv2.VideoCapture(cid)
+            c = cv2.VideoCapture(cid, cv2.CAP_DSHOW)
         except:
             return False
 
-        if c.isOpened() == True:
-            if cid not in self.CamThread:
-                self.CamThread[cid] = PrintCamera(cid)
-                self.CamThread[cid].start()
+        #카메라가 정상적으로 열려 있고, 스레드에 없을 경우에만 실행
+        if c.isOpened() == True and cid not in self.CamThread:
+            c.release() #일시적인 사용이므로 릴리즈한다.
             
-            if self.ResShow == 0:
-                self.ResShow = 1
+            self.CamThread[cid] = PrintCamera(cid)
                 
-                self.cap = self.CamThread[cid]
-                self.cap.changePixmap.connect(self.update_image)
-                self.cap.SetShow(True)
-                
-            elif self.ResShow == 1:
-                self.cap.SetShow(False)
-                self.cap.changePixmap.disconnect(self.update_image)
-                
-                self.cap = self.CamThread[cid]
-                self.cap.changePixmap.connect(self.update_image)
-                self.cap.SetShow(True)
-                
-            return True
+            self.cap = self.CamThread[cid]
+            self.cap.start()
 
-#스레드 종료
-#https://investox.tistory.com/entry/%ED%8C%8C%EC%9D%B4%EC%8D%AC-%EB%A9%80%ED%8B%B0%EC%93%B0%EB%A0%88%EB%93%9C-%EC%98%A4%EB%A5%98%EC%97%86%EC%9D%B4-%EC%A2%85%EB%A3%8C%ED%95%98%EA%B8%B0-QThread-GUI
+            return True
+    
+    #카메라 결과 보여주기
+    def ShowCamera(self, dvcid):
+        #장치의 ID를 int 값으로 변환한다. (USB 카메라)
+        try:
+            cid = int(dvcid)
+        except:
+            cid = str(dvcid)
+
+        #기존에 카메라 출력 연결이 있으면 해제한다. (감지는 계속된다.)
+        try:
+            self.Show_Cam_Device.changePixmap.disconnect()
+        except:
+            pass
+
+        #현재 카메라 ID의 결과를 출력한다.
+        self.cap = self.CamThread[cid]
+        self.cap.changePixmap.connect(self.update_image)
+        
+        #출력되는 장치를 저장한다.
+        self.Show_Cam_Device = self.cap
+        
+        #출력되는 카메라의 ID 지정
+        self.LB_CamNum.setText("Camera " + str(cid))
 
 #카메라 출력 스레드
 class PrintCamera(QThread):
@@ -226,17 +234,15 @@ class PrintCamera(QThread):
         super().__init__()
         self.work = True
         self.CamID = cid
-        self.showRes = 0
     
     #스레드의 실제 작동 부위
     def run(self):
-        
         PL.EventLog("Detect Start [Cam ID : " + str(self.CamID) + "]", "INFO")
         
-        c = cv2.VideoCapture(self.CamID, cv2.CAP_DSHOW)
-            
-        while self.work:
-            r, img = c.read()
+        cam = cv2.VideoCapture(self.CamID, cv2.CAP_DSHOW)
+        
+        while self.work:            
+            r, img = cam.read()
             
             if r:
                 t = dt.datetime.now()
@@ -259,19 +265,16 @@ class PrintCamera(QThread):
                 if(len(Acc) != 0 and checktime):
                     ScreenShoot(res)
 
-                if(self.showRes == 1):
-                    self.changePixmap.emit(res)
+                #결과를 반환한다.
+                self.changePixmap.emit(res)
                 
                 #10ms의 지연을 준다.
                 cv2.waitKey(10)
                 
-        c.release()
-        
-    def SetShow(self, Type):
-        if(Type):
-            self.showRes = 1
-        else:
-            self.showRes = 0
+            else:
+                break
+                
+        cam.release()
 
     #스레드를 오류 없이 종료하기 위함
     def stop(self):
@@ -280,7 +283,7 @@ class PrintCamera(QThread):
         self.quit()
         self.wait(1000)
                 
-#로그 실시간 업데이트 스레드
+#로그 실시간 업데이트 클래스
 class GetLog(QThread):
     LogUpdate = pyqtSignal(str)
     
@@ -297,11 +300,12 @@ class GetLog(QThread):
                 time.sleep(1)
 
     def stop(self):
-        PL.EventLog("Logging Start!", "INFO")
+        PL.EventLog("Logging Ended!", "INFO")
         self.work = False
         self.quit()
         self.wait(1000)
-        
+
+#카메라 추가 클래스
 class AddCam(QThread):    
     def __init__(self):
         super().__init__()
@@ -313,6 +317,7 @@ class AddCam(QThread):
         if(self.s.QL_Value.text() != "" and self.s.QL_Value.text() != None):
             return self.s.QL_Value.text(), True
 
+#이미지 저장 함수
 def ScreenShoot(image, Type="system"):
     img = ImageQt.fromqpixmap(image)
     

@@ -21,7 +21,10 @@ if __name__ == "__main__":
         
         myWindow = UI_Main.MainGUI()
         myWindow.show()
-        app.exec()
+        ex = app.exec()
+        
+        #프로그램 완전 종료
+        sys.exit(ex)
     
     else:
         print("Program can't Initialization")

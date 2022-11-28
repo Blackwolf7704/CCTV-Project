@@ -23,6 +23,7 @@ class ConfigUI(QDialog, QWidget, form_class):
         self.Btn_OK.clicked.connect(self.ClickOkBtn)
         self.Btn_Cancel.clicked.connect(self.ClickCancelBtn)
         
+    #설정 적용 버튼을 눌렀을 때, 실행되는 함수
     def ClickOkBtn(self):
         try:
             config_value = cf.GetProgramConf()
@@ -37,5 +38,6 @@ class ConfigUI(QDialog, QWidget, form_class):
             print(E)
             QMessageBox.critical(self, "ERROR", "설정을 적용할 수 없습니다!", QMBS.Yes)
     
+    #닫기 버튼을 눌렀을 때, 실행되는 함수
     def ClickCancelBtn(self):
         self.close()

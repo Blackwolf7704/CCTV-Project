@@ -1,7 +1,7 @@
-#default module
+#JSON 모듈 import
 import json
 
-#Custom Module
+#초기화 모듈 (값 불러오는 용도)
 import Initialization as Init
 
 #Init 모듈에 정의된 값 불러오기
@@ -9,7 +9,7 @@ DvcList = Init.DvcList
 ProgramConf = Init.ProgramConf
 MainLoc = Init.MainLoc
 
-#설정 가져오기
+#장치 설정 가져오기
 def GetDeviceConf():
     F = open(MainLoc + "data/" + DvcList, "r")
     dvcList = json.load(F)
@@ -17,6 +17,7 @@ def GetDeviceConf():
     
     return dvcList
 
+#프로그램 설정 가져오기
 def GetProgramConf():
     F = open(MainLoc + "data/" + ProgramConf, "r")
     data = json.load(F)

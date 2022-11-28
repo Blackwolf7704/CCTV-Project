@@ -46,6 +46,7 @@ def onStarted():
     #이벤트 로그에 시작을 기록함
     EventLog("Program Started", "INFO")
     
+#프로그램이 종료될 때, 로그 기록 및 파일명 변경
 def onEnded():
     EventLog("Program Ended", "INFO")
     

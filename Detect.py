@@ -1,4 +1,4 @@
-#Detect Code
+#모듈 import
 import cv2
 import numpy as np
 import torch, torchvision
@@ -12,7 +12,7 @@ INPUT_HEIGHT = 640          #입력 높이
 NMS_THRESHOLD = 0.45
 stride = 32
 
-#Model Load
+#Model Load (onnxruntime, cpu version)
 Model_Name = "detect.onnx"
 
 import onnxruntime
@@ -30,6 +30,7 @@ im = torch.zeros((1, 3, 640, 640)).cpu().numpy()
 warm = session.run([session.get_outputs()[0].name], {session.get_inputs()[0].name:im})[0]
 '''
 
+#전처리 코드 (Yolov5의 Detect.py 기반)
 def Detect(frame, MIN_Accuracy):
     #https://towardsdatascience.com/tensors-and-arrays-2611d48676d5
     #텐서 형식이 ndarray보다 성능 개선이 있다.
@@ -111,10 +112,10 @@ def Detect(frame, MIN_Accuracy):
                 cv2.rectangle(frame, p1, p2, (0,0,255), 2)
                 
     return frame, Accuracy
-            
 
+#yolov5 코드 추출
+# Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
 def convertaxis(x):
-    # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right
     y = x.clone() if isinstance(x, torch.Tensor) else np.copy(x)
     y[:, 0] = x[:, 0] - x[:, 2] / 2  # top left x
     y[:, 1] = x[:, 1] - x[:, 3] / 2  # top left y

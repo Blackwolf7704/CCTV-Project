@@ -59,6 +59,7 @@ def MakeConfFile():
     #Data 폴더 안에 모든 컨픽 파일이 생기게 함
     SubLoc = MainLoc + "/data/"
     
+    #컨픽 파일이 없을 경우, 새로 생성한다.
     try:
         F1 = open(SubLoc + DvcList, "r")
         F2 = open(SubLoc + ProgramConf, "r")
