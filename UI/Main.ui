@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string/>
+   <string>Main</string>
   </property>
   <widget class="QLabel" name="LB_CamNum">
    <property name="geometry">

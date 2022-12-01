@@ -77,8 +77,7 @@ def MakeConfFile():
         #기본 설정 지정
         conf = {
             "SC_Delay" : 5,
-            "Accuracy" : 0.55,
-            "Default_Device" : 0
+            "Accuracy" : 0.55
         }
         
         json.dump(conf, F2, indent=2)

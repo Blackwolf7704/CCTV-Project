@@ -8,7 +8,7 @@ INPUT_WIDTH = 640           #입력 너비
 INPUT_HEIGHT = 640          #입력 높이
 
 #NMS (Non-Maximum Suppression) 수치이다.
-#값이 높거나, 작으면 상자의 개수가 줄어든다. (https://wikidocs.net/142645)
+#값이 높거나, 작으면 상자의 개수가 줄어든다.
 NMS_THRESHOLD = 0.45
 stride = 32
 
@@ -31,10 +31,7 @@ warm = session.run([session.get_outputs()[0].name], {session.get_inputs()[0].nam
 '''
 
 #전처리 코드 (Yolov5의 Detect.py 기반)
-def Detect(frame, MIN_Accuracy):
-    #https://towardsdatascience.com/tensors-and-arrays-2611d48676d5
-    #텐서 형식이 ndarray보다 성능 개선이 있다.
-    
+def Detect(frame, MIN_Accuracy):    
     #전처리 과정 (Yolov5 에서 추출) 각 함수의 추출한 부분 나열
     ################################
     #augmentations.py (LETTERBOX)

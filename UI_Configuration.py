@@ -35,7 +35,6 @@ class ConfigUI(QDialog, QWidget, form_class):
             QMessageBox.information(self, "Success", "설정이 적용되었습니다.", QMBS.Yes)
             self.accept()
         except Exception as E:
-            print(E)
             QMessageBox.critical(self, "ERROR", "설정을 적용할 수 없습니다!", QMBS.Yes)
     
     #닫기 버튼을 눌렀을 때, 실행되는 함수

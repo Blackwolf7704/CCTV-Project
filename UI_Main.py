@@ -43,9 +43,6 @@ class Main():
 #UI 연결
 UI_Main = uic.loadUiType("./UI/Main.ui")[0]
 
-#https://doc.qt.io/qtforpython-6/api.html
-#https://doc.qt.io/qtforpython-6/PySide6/QtWidgets/index.html#module-PySide6.QtWidgets
-
 #메인 UI
 class MainGUI(QMainWindow, UI_Main):
     AddCamThreadRunning = 0
@@ -69,7 +66,6 @@ class MainGUI(QMainWindow, UI_Main):
         self.Btn_Screenshot.clicked.connect(self.onScreenShoot)
         self.Btn_AddCamera.clicked.connect(self.AddCamera)
         self.CMB_Camera.activated.connect(self.onCameraChange)
-        #self.BTN_DEBUG.clicked.connect(self.debug)
         
         #로그 업데이트 스레드 생성 및 시작
         try:
@@ -83,8 +79,7 @@ class MainGUI(QMainWindow, UI_Main):
         except Exception as E:
             #오류 발생시 프로그램 종료
             sys.exit()
-            
-    #QTextBrowser이 아닌 str로 변경했어야 한다.
+
     @pyqtSlot(str)
     def update_log(self, text):
         t = self.TB_LogBrowser.toPlainText().split("\n")

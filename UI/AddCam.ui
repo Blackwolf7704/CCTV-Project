@@ -23,7 +23,7 @@
    </size>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Add Camera</string>
   </property>
   <widget class="QPushButton" name="Btn_Connect">
    <property name="geometry">
